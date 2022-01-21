@@ -14,16 +14,18 @@ from webRequest import (
 
 def main():
     # TODO: Remove hardcode of creds
+
     credentials = {
-        "username": input("Username: ") or "AWILL-IMPL",
+        "username": input("Username: "),
         "password": getpass.getpass(prompt="Password: "),
-        "tenant": input("Tenant: ") or "invisors_dpt1",
+        "tenant": input("Tenant: "),
+        "dataCenter": input("Data Center: ").lower(),
     }
 
     # TODO: Add input and Dict for different Data Centers
     wsdls = {
-        "Integrations": f"https://wd2-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Integrations/v38.0",
-        "Core_Implementation_Service": f"https://wd2-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Core_Implementation_Service/v23.2",
+        "Integrations": f"https://{credentials['dataCenter']}-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Integrations/v38.0",
+        "Core_Implementation_Service": f"https://{credentials['dataCenter']}-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Core_Implementation_Service/v23.2",
     }
     integration = {}
     header = {"content-type": "text/xml"}
