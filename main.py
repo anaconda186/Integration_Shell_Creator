@@ -1,5 +1,6 @@
 import getpass
 import xml.dom.minidom
+import os.path
 
 import requests
 
@@ -38,7 +39,10 @@ def main():
     integration["Password"] = generate_password()
 
     # Integration Template
-    template_file = open("./data_files/Integration_Templates.txt", "r")
+    TEMPLATE_TXT = os.path.join(
+        os.path.dirname(__file__), "data_files\\Integration_Templates.txt"
+    )
+    template_file = open(TEMPLATE_TXT, "r")
     integration_templates = [(line.strip()) for line in template_file]
     template_file.close()
 
@@ -63,7 +67,7 @@ def main():
         while True:
             create_report_tf = input(
                 "Do you know what DATA SOURCE you want to use for the Report? (Y or N) "
-            )
+            ).upper()
 
             if create_report_tf in ("Y", "N"):
                 break
@@ -73,7 +77,10 @@ def main():
         # If they know the Data Source, Ask for the Data Source
         if create_report_tf == "Y":
             # Create list of Data Sources
-            data_source_file = open("./data_files/Data_Sources.txt", "r")
+            DATA_SOURCE_TXT = os.path.join(
+                os.path.dirname(__file__), "data_files\\Data_Sources.txt"
+            )
+            data_source_file = open(DATA_SOURCE_TXT, "r")
             data_source_list = {}
             for _ in data_source_file:
                 _ = _.strip().split("\t")
@@ -91,9 +98,10 @@ def main():
                     )
             integration["Data_Source"] = data_source_list[data_source]
 
-            data_source_filter_file = open(
-                "./data_files/Data_Sources_with_Filters.txt", "r"
+            DATA_SOURCE_FILTER_TXT = os.path.join(
+                os.path.dirname(__file__), "data_files\\Data_Sources_with_Filters.txt"
             )
+            data_source_filter_file = open(DATA_SOURCE_FILTER_TXT, "r")
             data_source_filter_list = {}
             for _ in data_source_filter_file:
                 _ = _.strip().split("\t")
@@ -115,7 +123,10 @@ def main():
                         print(
                             f"\nDATA SOURCE FILTER: '{data_source_filter}' was not recogized. Please confirm DATA SOURCE FILTER.\n"
                         )
-                data_filter_file = open("data_files/Data_Source_Filters.txt", "r")
+                DATA_FILTER_TXT = os.path.join(
+                    os.path.dirname(__file__), "data_files\\Data_Sources_Filters.txt"
+                )
+                data_filter_file = open(DATA_FILTER_TXT, "r")
                 data_filter_list = {}
                 for _ in data_filter_file:
                     _ = _.strip().split("\t")
