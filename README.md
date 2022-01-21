@@ -1,12 +1,13 @@
 # Integration_Shell_Creator
 
-Repo URL: https://github.com/anaconda186/Integration_Shell_Creator.git
+## Repo URL
+https://github.com/anaconda186/Integration_Shell_Creator.git
 
 The goal of this program is to completely automate the initilization of Integrations. 
 This will create the initial shell of the integration. 
 Custom configuration will still need to be made. 
 
-TODO/Milestones
+## TODO/Milestones
  - [ ] Create Integration System
     - [X] Connector - Completed 2021-10-15
     - [X] EIB - Completed 2021-10-17
@@ -28,7 +29,7 @@ TODO/Milestones
  - [ ] Retrieve Smartsheet Data
 
 
-Notes
+## Notes
  - Need to be careful adding security to ISSG
     * https://community.workday.com/node/524925
     * Adding ISSG to Domain will overwrite the entire domain
@@ -36,11 +37,11 @@ Notes
     * Uses private web services
  
 
-Reminders
+## Reminders
  - Ask BT about migration studio. How do migrate Clar file and load clar file
  - For studio creation look into what happens when studio deploys integration.
 
-Testing adding a Cloud Collection
+## Testing adding a Cloud Collection
  <?xml version="1.0"?>
 <soapenv:Envelope
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
