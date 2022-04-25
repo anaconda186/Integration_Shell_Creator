@@ -14,7 +14,7 @@ Custom configuration will still need to be made.
        - [X] Create Shell Report - Completed 2021-10-16
        - [X] Create Report with defined Data Source - Completed 2021-10-17
        - [X] Create EIB - Completed 2021-10-17
-       - [ ] Add Integration Report Tag
+       - [X] Add Integration Report Tag - 2022-04-25
     - [ ] Studio
        - [X] Create Cloud Integration Template - Completed 2021-10-15
        - [ ] Initialize Cloud Collection
