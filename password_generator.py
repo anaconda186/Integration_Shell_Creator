@@ -4,7 +4,6 @@ import array
 # maximum length of password needed
 # this can be changed to suit your password length
 def generate_password(length: int = 16) -> str:
-    MAX_LEN = length
 
     # declare arrays of the character that we need in out password
     # Represented as chars to enable easy string concatenation

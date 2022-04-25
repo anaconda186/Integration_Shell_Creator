@@ -1,6 +1,7 @@
 import getpass
 import xml.dom.minidom
 import os.path
+from time import sleep
 
 import requests
 
@@ -8,20 +9,20 @@ from password_generator import generate_password
 from webRequest import (
     create_custom_report,
     create_integration_system,
-    create_ISSG,
-    create_ISU,
+    create_issg,
+    create_isu,
 )
+
+credentials = {
+    "username": input("Username: "),
+    "password": getpass.getpass(prompt="Password: "),
+    "tenant": input("Tenant: "),
+    "dataCenter": input("Data Center: ").lower(),
+}
 
 
 def main():
-    # TODO: Remove hardcode of creds
-
-    credentials = {
-        "username": input("Username: "),
-        "password": getpass.getpass(prompt="Password: "),
-        "tenant": input("Tenant: "),
-        "dataCenter": input("Data Center: ").lower(),
-    }
+    
 
     # TODO: Add input and Dict for different Data Centers
     wsdls = {
@@ -124,7 +125,7 @@ def main():
                             f"\nDATA SOURCE FILTER: '{data_source_filter}' was not recogized. Please confirm DATA SOURCE FILTER.\n"
                         )
                 DATA_FILTER_TXT = os.path.join(
-                    os.path.dirname(__file__), "data_files\\Data_Sources_Filters.txt"
+                    os.path.dirname(__file__), "data_files\\Data_Source_Filters.txt"
                 )
                 data_filter_file = open(DATA_FILTER_TXT, "r")
                 data_filter_list = {}
@@ -138,24 +139,24 @@ def main():
         # If they don't know the Data source, create temporary report
         else:
             print("A temporary report will be created to load the integration")
-            # integration["Data_Source"] = data_source_list["Workers for HCM Reporting"]
-            # integration["Filter"] = "a413a552c8b110000b0468f8f9af002b"
 
         # Create Request
         request = create_custom_report(integration, credentials).strip("\n")
         header = {"content-type": "text/xml"}
-
+        print("Putting Report...")
         r = requests.post(
             wsdls["Core_Implementation_Service"], data=request, headers=header
         )
 
         # Parse Repsonse
         xml_response = xml.dom.minidom.parseString(r.text)
+        sleep(5)
         if r.status_code == 200:
             print(r, " - ", r.reason)
             print(f"CRI {integration['Name']} was successfully placed in target tenant")
             ID = xml_response.getElementsByTagName("wd:ID")
             integration["ReportWID"] = ID[0].firstChild.data
+
         else:
 
             print(r, " - ", r.reason)
@@ -167,7 +168,7 @@ def main():
             print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
             print("Response: ")
             print(xml_response.toprettyxml(indent="   "))
-            close = input("Error: Hit enter to close.")
+            input("Error\nHit enter to close.")
             exit(1)
         input("Continue?")
     else:
@@ -175,11 +176,13 @@ def main():
 
     # Create Integration System
     request = create_integration_system(integration, credentials).strip("\n")
+    print("Putting Integration...")
     r = requests.post(wsdls["Integrations"], data=request, headers=header)
-
+    sleep(5)
     if r.status_code == 200:
         print(r, " - ", r.reason)
         print(f"{integration['Name']} was successfully placed in target tenant")
+
     else:
         print(r, " - ", r.reason)
         print(f"Error: {integration['Name']} could not be placed in target tenant")
@@ -188,44 +191,50 @@ def main():
         print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
         print("Response: ")
         print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
-        close = input("Error: Hit enter to close.")
+        input("Error: Hit enter to close.")
         exit(1)
     input("Continue?")
 
     # Create ISU
-    request = create_ISU(integration, credentials).strip("\n")
+    request = create_isu(integration, credentials).strip("\n")
+    print("Putting ISU...")
     r = requests.post(wsdls["Integrations"], data=request, headers=header)
-
+    sleep(5)
     if r.status_code == 200:
         print(r, " - ", r.reason)
         print(
             f"ISU {integration['Name']} was successfully created and attached to Integration"
         )
         integration["ISU"] = "ISU " + integration["Name"]
+
     else:
         print(r, " - ", r.reason)
         print(f"Error: ISU {integration['Name']} could not be placed in target tenant")
         print("Please check below for more information.")
         print("Request: ")
-        print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
+        # print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
+        print(request)
         print("Response: ")
-        print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
-        close = input("Error: Hit enter to close.")
+        print(r.text)
+        # print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
+        input("Error: Hit enter to close.")
         exit(1)
     input("Continue?")
 
     # Create ISSG
-    request = create_ISSG(integration, credentials).strip("\n")
+    request = create_issg(integration, credentials).strip("\n")
+    print("Putting ISSG...")
     r = requests.post(
         wsdls["Core_Implementation_Service"], data=request, headers=header
     )
-
+    sleep(5)
     if r.status_code == 200:
         print(r, " - ", r.reason)
         print(
             f"ISSG {integration['Name']} was successfully created and attached to ISU"
         )
         integration["ISSG"] = "ISSG " + integration["Name"]
+
     else:
         print(r, " - ", r.reason)
         print(f"ISSG {integration['Name']} could not be created in target tenant")
@@ -235,7 +244,7 @@ def main():
         print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
         print("Response: ")
         print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
-        close = input("Error: Hit enter to close.")
+        input("Error: Hit enter to close.")
         exit(1)
 
     print(integration)

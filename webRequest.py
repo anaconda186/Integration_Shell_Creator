@@ -1,4 +1,4 @@
-def create_ISU(integration: dict, credentials: dict) -> str:
+def create_isu(integration: dict, credentials: dict) -> str:
     request = f"""<?xml version="1.0" encoding="utf-8"?>
     <env:Envelope
         xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
@@ -109,39 +109,39 @@ def create_integration_system(integration: dict, credentials: dict) -> str:
     return request
 
 
-# def create_integration_service(integration: dict, credentials: dict) -> str:
-#     request = f"""<?xml version="1.0" encoding="utf-8"?>
-#     <env:Envelope
-#         xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
-#         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-#         xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-#         <env:Header>
-#             <wsse:Security env:mustUnderstand="1">
-#                 <wsse:UsernameToken>
-#                     <wsse:Username>{credentials["username"]}@{credentials["tenant"]}</wsse:Username>
-#                     <wsse:Password
-#                         Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{credentials["password"]}</wsse:Password>
-#                 </wsse:UsernameToken>
-#             </wsse:Security>
-#         </env:Header>
-#         <env:Body>
-#             <wd:Put_Integration_System_Request
-#                 xmlns:wd="urn:com.workday/bsvc"
-#                 wd:Add_Only="false"
-#                 wd:version="v36.2">
-#                 <wd:Integration_System_Data>
-#                     <wd:Integration_System_Name>{integration["Name"]}</wd:Integration_System_Name>
-#                     <wd:Integration_Template_Reference>
-#                         <wd:ID wd:type="Integration_Template_Name">{integration["Template"]}</wd:ID>
-#                     </wd:Integration_Template_Reference>
-#                 </wd:Integration_System_Data>
-#             </wd:Put_Integration_System_Request>
-#         </env:Body>
-#     </env:Envelope>"""
-#     return request
+def create_integration_service(integration: dict, credentials: dict) -> str:
+    request = f"""<?xml version="1.0" encoding="utf-8"?>
+    <env:Envelope
+        xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+        <env:Header>
+            <wsse:Security env:mustUnderstand="1">
+                <wsse:UsernameToken>
+                    <wsse:Username>{credentials["username"]}@{credentials["tenant"]}</wsse:Username>
+                    <wsse:Password
+                        Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{credentials["password"]}</wsse:Password>
+                </wsse:UsernameToken>
+            </wsse:Security>
+        </env:Header>
+        <env:Body>
+            <wd:Put_Integration_System_Request
+                xmlns:wd="urn:com.workday/bsvc"
+                wd:Add_Only="false"
+                wd:version="v36.2">
+                <wd:Integration_System_Data>
+                    <wd:Integration_System_Name>{integration["Name"]}</wd:Integration_System_Name>
+                    <wd:Integration_Template_Reference>
+                        <wd:ID wd:type="Integration_Template_Name">{integration["Template"]}</wd:ID>
+                    </wd:Integration_Template_Reference>
+                </wd:Integration_System_Data>
+            </wd:Put_Integration_System_Request>
+        </env:Body>
+    </env:Envelope>"""
+    return request
 
 
-def create_ISSG(integration: dict, credentials: dict) -> str:
+def create_issg(integration: dict, credentials: dict) -> str:
     request = f"""<?xml version="1.0" encoding="utf-8"?>
     <env:Envelope
         xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
