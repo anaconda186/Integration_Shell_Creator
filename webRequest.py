@@ -201,6 +201,9 @@ def create_custom_report(integration: dict, credentials: dict) -> str:
                     <wd:Tenanted_Report_Definition_Type_Reference>
                         <wd:ID wd:type="Report_Type_ID">Advanced</wd:ID>
                     </wd:Tenanted_Report_Definition_Type_Reference>
+                    <wd:Report_Tag_Reference>
+                        <wd:ID wd:type="Custom_Report_Tag_ID">Integration</wd:ID>
+                    </wd:Report_Tag_Reference>
                     <wd:Enable_As_Worklet>0</wd:Enable_As_Worklet>
                     <wd:Web_Service_API_Version_Reference>
                         <wd:ID wd:type="Version">v32.0</wd:ID>
