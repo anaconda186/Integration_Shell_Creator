@@ -25,6 +25,8 @@ Custom configuration will still need to be made.
  - [ ] Create Security Groupx
     - [X] Create ISSG
     - [ ] Add security domain to ISSG
+ - [ ] Add BP Customization
+    - [ ] Define Delivery/ Retrieval Step
  - [ ] Create Optional Services
  - [ ] GUI
  - [ ] Retrieve Smartsheet Data
