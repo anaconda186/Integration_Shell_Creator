@@ -1,3 +1,6 @@
+from datetime import date
+
+
 def create_isu(integration: dict, credentials: dict) -> str:
     request = f"""<?xml version="1.0" encoding="utf-8"?>
     <env:Envelope
@@ -233,6 +236,289 @@ def create_custom_report(integration: dict, credentials: dict) -> str:
                     <wd:Counter_for_Reference_ID>1</wd:Counter_for_Reference_ID>
                 </wd:Tenanted_Report_Definition_Data>
             </wd:Put_Tenanted_Report_Definition_Request>
+        </env:Body>
+    </env:Envelope>"""
+    return request
+
+
+def create_business_process(
+    integration: dict,
+    credentials: dict,
+    create_retrieval_service_tf: bool,
+    create_delivery_service_tf: bool,
+) -> str:
+    request = f"""<?xml version="1.0" encoding="utf-8"?>
+    <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+        <env:Header>
+            <wsse:Security env:mustUnderstand="1">
+                <wsse:UsernameToken>
+                    <wsse:Username>{credentials["username"]}@{credentials["tenant"]}</wsse:Username>
+                    <wsse:Password
+                        Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"
+                        >{credentials["password"]}</wsse:Password>
+                </wsse:UsernameToken>
+            </wsse:Security>
+        </env:Header>
+        <env:Body>
+            <wd:Put_Business_Process_Definition_Request
+                wd:version="v35.0"
+                xmlns:wd="urn:com.workday/bsvc">
+                <wd:Business_Process_Definition_Data>
+                    <wd:Business_Process_Definition_ID>BP_{integration["Name"].replace(' ','_')}</wd:Business_Process_Definition_ID>
+                    <wd:Business_Process_Type_Reference>
+                        <wd:ID wd:type="Business_Process_Type">Integration Process ID
+                    </wd:ID>
+                    </wd:Business_Process_Type_Reference>
+                    <wd:Integration_System_Reference>
+                        <wd:ID wd:type="Integration_System_ID">{integration["Name"].replace(' ','_')}</wd:ID>
+                    </wd:Integration_System_Reference>
+                    <wd:Rule_Based_Definition>0</wd:Rule_Based_Definition>
+                    <wd:Effective_Date>{date.today()}</wd:Effective_Date>
+                    <wd:Due_Date_Is_Based_On_Effective_Date>0</wd:Due_Date_Is_Based_On_Effective_Date>
+                    <wd:Enable_Autocomplete>0</wd:Enable_Autocomplete>
+                    <wd:Business_Process_Step_Data>
+                        <wd:Order>a</wd:Order>
+                        <wd:Dynamic_Parallel_Step>0</wd:Dynamic_Parallel_Step>
+                        <wd:Completion_Step>0</wd:Completion_Step>
+                        <wd:Business_Process_Step_Type_Reference>
+                            <wd:ID wd:type="Workflow_Step_Type_ID">INITIATION</wd:ID>
+                        </wd:Business_Process_Step_Type_Reference>
+                        <wd:Optional_Step>0</wd:Optional_Step>
+                        <wd:Asynchronous>0</wd:Asynchronous>
+                        <wd:Due_Date_Is_Based_On_Effective_Date>0</wd:Due_Date_Is_Based_On_Effective_Date>
+                        <wd:Process_by_All_in_Role>0</wd:Process_by_All_in_Role>
+                        <wd:Disable_System_Notification>0</wd:Disable_System_Notification>
+                    </wd:Business_Process_Step_Data>
+                    {f'''
+                    <wd:Business_Process_Step_Data>
+                        <wd:Order>b</wd:Order>
+                        <wd:Dynamic_Parallel_Step>0</wd:Dynamic_Parallel_Step>
+                        <wd:Completion_Step>0</wd:Completion_Step>
+                        <wd:Business_Process_Step_Type_Reference>
+                            <wd:ID wd:type="Workflow_Step_Type_ID">SERVICE</wd:ID>
+                        </wd:Business_Process_Step_Type_Reference>
+                        <wd:Optional_Step>0</wd:Optional_Step>
+                        <wd:Asynchronous>0</wd:Asynchronous>
+                        <wd:Due_Date_Is_Based_On_Effective_Date>0</wd:Due_Date_Is_Based_On_Effective_Date>
+                        <wd:Event_Service_Reference>
+                            <wd:ID wd:type="Event_Service_Name">Document Retrieval</wd:ID>
+                        </wd:Event_Service_Reference>
+                        <wd:Document_Retrieval_Configuration_Data>
+                            <wd:Document_Retention_Policy>30</wd:Document_Retention_Policy>
+                            <wd:Integration_Data_Retrieval_Data>
+                                <wd:Retrieval_File_Data>
+                                    <wd:File_Name_Pattern>*.*</wd:File_Name_Pattern>
+                                </wd:Retrieval_File_Data>
+                                <wd:Transport_Protocol_Data>
+                                    <wd:SFTP_Transport_Protocol_Data>
+                                        <wd:SFTP_Address>sftp://change.me</wd:SFTP_Address>
+                                        <wd:Directory>changeme</wd:Directory>
+                                        <wd:Dual_Authentication>0</wd:Dual_Authentication>
+                                        <wd:User_ID>changeme</wd:User_ID>
+                                        <wd:Password>changeme</wd:Password>
+                                        <wd:Use_Temp_File>0</wd:Use_Temp_File>
+                                        <wd:Block_Size>32768</wd:Block_Size>
+                                        <wd:Block_Size_Name>32K</wd:Block_Size_Name>
+                                    </wd:SFTP_Transport_Protocol_Data>
+                                </wd:Transport_Protocol_Data>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">IMPL</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">SANDBOX</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                                <wd:Decompress>0</wd:Decompress>
+                                <wd:Delete_After_Retrieval>0</wd:Delete_After_Retrieval>
+                            </wd:Integration_Data_Retrieval_Data>
+                            <wd:Integration_Data_Retrieval_Data>
+                                <wd:Retrieval_File_Data>
+                                    <wd:File_Name_Pattern>*.*</wd:File_Name_Pattern>
+                                </wd:Retrieval_File_Data>
+                                <wd:Transport_Protocol_Data>
+                                    <wd:SFTP_Transport_Protocol_Data>
+                                        <wd:SFTP_Address>sftp://changeme</wd:SFTP_Address>
+                                        <wd:Directory>changeme</wd:Directory>
+                                        <wd:Dual_Authentication>0</wd:Dual_Authentication>
+                                        <wd:User_ID>changeme</wd:User_ID>
+                                        <wd:Password>changeme</wd:Password>
+                                        <wd:Use_Temp_File>0</wd:Use_Temp_File>
+                                        <wd:Block_Size>32768</wd:Block_Size>
+                                        <wd:Block_Size_Name>32K</wd:Block_Size_Name>
+                                    </wd:SFTP_Transport_Protocol_Data>
+                                </wd:Transport_Protocol_Data>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">PROD</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                                <wd:Decompress>0</wd:Decompress>
+                                <wd:Delete_After_Retrieval>0</wd:Delete_After_Retrieval>
+                            </wd:Integration_Data_Retrieval_Data>
+                        </wd:Document_Retrieval_Configuration_Data>
+                        <wd:Process_by_All_in_Role>0</wd:Process_by_All_in_Role>
+                        <wd:Disable_System_Notification>0</wd:Disable_System_Notification>
+                    </wd:Business_Process_Step_Data>
+                    ''' if create_retrieval_service_tf else ""}
+                    <wd:Business_Process_Step_Data>
+                        <wd:Order>{'c' if create_retrieval_service_tf else 'b'}</wd:Order>
+                        <wd:Dynamic_Parallel_Step>0</wd:Dynamic_Parallel_Step>
+                        <wd:Completion_Step>0</wd:Completion_Step>
+                        <wd:Business_Process_Step_Type_Reference>
+                            <wd:ID wd:type="Workflow_Step_Type_ID">SERVICE</wd:ID>
+                        </wd:Business_Process_Step_Type_Reference>
+                        <wd:Optional_Step>0</wd:Optional_Step>
+                        <wd:Asynchronous>0</wd:Asynchronous>
+                        <wd:Due_Date_Is_Based_On_Effective_Date>0</wd:Due_Date_Is_Based_On_Effective_Date>
+                        <wd:Event_Service_Reference>
+                            <wd:ID wd:type="Event_Service_Name">Fire Integration</wd:ID>
+                        </wd:Event_Service_Reference>
+                        <wd:Process_by_All_in_Role>0</wd:Process_by_All_in_Role>
+                        <wd:Disable_System_Notification>0</wd:Disable_System_Notification>
+                    </wd:Business_Process_Step_Data>
+                    {f'''
+                    <wd:Business_Process_Step_Data>
+                        <wd:Order>c</wd:Order>
+                        <wd:Dynamic_Parallel_Step>0</wd:Dynamic_Parallel_Step>
+                        <wd:Completion_Step>0</wd:Completion_Step>
+                        <wd:Business_Process_Step_Type_Reference>
+                            <wd:ID wd:type="Workflow_Step_Type_ID">SERVICE</wd:ID>
+                        </wd:Business_Process_Step_Type_Reference>
+                        <wd:Optional_Step>0</wd:Optional_Step>
+                        <wd:Asynchronous>0</wd:Asynchronous>
+                        <wd:Due_Date_Is_Based_On_Effective_Date>0</wd:Due_Date_Is_Based_On_Effective_Date>
+                        <wd:Event_Service_Reference>
+                            <wd:ID wd:type="Event_Service_Name">Document Delivery</wd:ID>
+                        </wd:Event_Service_Reference>
+                        <wd:Document_Delivery_Configuration_Data>
+                            <wd:Deliver_Documents_from_This_Event>1</wd:Deliver_Documents_from_This_Event>
+                            <wd:Delivery_Attempts_Reference>
+                                <wd:ID wd:type="Maximum_Limit">3</wd:ID>
+                            </wd:Delivery_Attempts_Reference>
+                            <wd:Integration_Data_Communication_Data>
+                                <wd:Transport_Protocol_Data>
+                                    <wd:SFTP_Transport_Protocol_Data>
+                                        <wd:SFTP_Address>sftp://change.me</wd:SFTP_Address>
+                                        <wd:Directory>changeme</wd:Directory>
+                                        <wd:Dual_Authentication>0</wd:Dual_Authentication>
+                                        <wd:User_ID>changeme</wd:User_ID>
+                                        <wd:Password>changeme</wd:Password>
+                                        <wd:Use_Temp_File>1</wd:Use_Temp_File>
+                                        <wd:Block_Size>32768</wd:Block_Size>
+                                        <wd:Block_Size_Name>32K</wd:Block_Size_Name>
+                                    </wd:SFTP_Transport_Protocol_Data>
+                                </wd:Transport_Protocol_Data>
+                                <wd:Content_Data>
+                                    <wd:Compressed>0</wd:Compressed>
+                                    <wd:Use_Improved_Compression>0</wd:Use_Improved_Compression>
+                                    <wd:Transfer_Acceleration_Enabled>0</wd:Transfer_Acceleration_Enabled>
+                                </wd:Content_Data>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">IMPL</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">SANDBOX</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                            </wd:Integration_Data_Communication_Data>
+                            <wd:Integration_Data_Communication_Data>
+                                <wd:Transport_Protocol_Data>
+                                    <wd:SFTP_Transport_Protocol_Data>
+                                        <wd:SFTP_Address>sftp://change.me</wd:SFTP_Address>
+                                        <wd:Directory>changeme</wd:Directory>
+                                        <wd:Dual_Authentication>0</wd:Dual_Authentication>
+                                        <wd:User_ID>changeme</wd:User_ID>
+                                        <wd:Password>changeme</wd:Password>
+                                        <wd:Use_Temp_File>1</wd:Use_Temp_File>
+                                        <wd:Block_Size>32768</wd:Block_Size>
+                                        <wd:Block_Size_Name>32K</wd:Block_Size_Name>
+                                    </wd:SFTP_Transport_Protocol_Data>
+                                </wd:Transport_Protocol_Data>
+                                <wd:Content_Data>
+                                    <wd:Compressed>0</wd:Compressed>
+                                    <wd:Use_Improved_Compression>0</wd:Use_Improved_Compression>
+                                    <wd:Transfer_Acceleration_Enabled>0</wd:Transfer_Acceleration_Enabled>
+                                </wd:Content_Data>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">PROD</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                            </wd:Integration_Data_Communication_Data>
+                        </wd:Document_Delivery_Configuration_Data>
+                        <wd:Process_by_All_in_Role>0</wd:Process_by_All_in_Role>
+                        <wd:Disable_System_Notification>0</wd:Disable_System_Notification>
+                    </wd:Business_Process_Step_Data>
+                    ''' if (create_delivery_service_tf and not(create_retrieval_service_tf)) else ""}
+                    {f'''
+                    <wd:Business_Process_Step_Data>
+                        <wd:Order>d</wd:Order>
+                        <wd:Dynamic_Parallel_Step>0</wd:Dynamic_Parallel_Step>
+                        <wd:Completion_Step>0</wd:Completion_Step>
+                        <wd:Business_Process_Step_Type_Reference>
+                            <wd:ID wd:type="Workflow_Step_Type_ID">SERVICE</wd:ID>
+                        </wd:Business_Process_Step_Type_Reference>
+                        <wd:Optional_Step>0</wd:Optional_Step>
+                        <wd:Asynchronous>0</wd:Asynchronous>
+                        <wd:Due_Date_Is_Based_On_Effective_Date>0</wd:Due_Date_Is_Based_On_Effective_Date>
+                        <wd:Event_Service_Reference>
+                            <wd:ID wd:type="Event_Service_Name">Document Delivery</wd:ID>
+                        </wd:Event_Service_Reference>
+                        <wd:Document_Delivery_Configuration_Data>
+                            <wd:Deliver_Documents_from_This_Event>1</wd:Deliver_Documents_from_This_Event>
+                            <wd:Delivery_Attempts_Reference>
+                                <wd:ID wd:type="Maximum_Limit">3</wd:ID>
+                            </wd:Delivery_Attempts_Reference>
+                            <wd:Integration_Data_Communication_Data>
+                                <wd:Transport_Protocol_Data>
+                                    <wd:SFTP_Transport_Protocol_Data>
+                                        <wd:SFTP_Address>sftp://change.me</wd:SFTP_Address>
+                                        <wd:Directory>changeme</wd:Directory>
+                                        <wd:Dual_Authentication>0</wd:Dual_Authentication>
+                                        <wd:User_ID>changeme</wd:User_ID>
+                                        <wd:Password>changeme</wd:Password>
+                                        <wd:Use_Temp_File>1</wd:Use_Temp_File>
+                                        <wd:Block_Size>32768</wd:Block_Size>
+                                        <wd:Block_Size_Name>32K</wd:Block_Size_Name>
+                                    </wd:SFTP_Transport_Protocol_Data>
+                                </wd:Transport_Protocol_Data>
+                                <wd:Content_Data>
+                                    <wd:Compressed>0</wd:Compressed>
+                                    <wd:Use_Improved_Compression>0</wd:Use_Improved_Compression>
+                                    <wd:Transfer_Acceleration_Enabled>0</wd:Transfer_Acceleration_Enabled>
+                                </wd:Content_Data>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">IMPL</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">SANDBOX</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                            </wd:Integration_Data_Communication_Data>
+                            <wd:Integration_Data_Communication_Data>
+                                <wd:Transport_Protocol_Data>
+                                    <wd:SFTP_Transport_Protocol_Data>
+                                        <wd:SFTP_Address>sftp://change.me</wd:SFTP_Address>
+                                        <wd:Directory>changeme</wd:Directory>
+                                        <wd:Dual_Authentication>0</wd:Dual_Authentication>
+                                        <wd:User_ID>changeme</wd:User_ID>
+                                        <wd:Password>changeme</wd:Password>
+                                        <wd:Use_Temp_File>1</wd:Use_Temp_File>
+                                        <wd:Block_Size>32768</wd:Block_Size>
+                                        <wd:Block_Size_Name>32K</wd:Block_Size_Name>
+                                    </wd:SFTP_Transport_Protocol_Data>
+                                </wd:Transport_Protocol_Data>
+                                <wd:Content_Data>
+                                    <wd:Compressed>0</wd:Compressed>
+                                    <wd:Use_Improved_Compression>0</wd:Use_Improved_Compression>
+                                    <wd:Transfer_Acceleration_Enabled>0</wd:Transfer_Acceleration_Enabled>
+                                </wd:Content_Data>
+                                <wd:Restricted_To_Environment_Reference>
+                                    <wd:ID wd:type="OMS_Environment_Type">PROD</wd:ID>
+                                </wd:Restricted_To_Environment_Reference>
+                            </wd:Integration_Data_Communication_Data>
+                        </wd:Document_Delivery_Configuration_Data>
+                        <wd:Process_by_All_in_Role>0</wd:Process_by_All_in_Role>
+                        <wd:Disable_System_Notification>0</wd:Disable_System_Notification>
+                    </wd:Business_Process_Step_Data>
+                    ''' if (create_delivery_service_tf and create_retrieval_service_tf) else ""}
+                </wd:Business_Process_Definition_Data>
+            </wd:Put_Business_Process_Definition_Request>
         </env:Body>
     </env:Envelope>"""
     return request

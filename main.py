@@ -1,3 +1,4 @@
+from ast import Break
 import getpass
 import xml.dom.minidom
 import os.path
@@ -8,6 +9,7 @@ import requests
 
 from password_generator import generate_password
 from webRequest import (
+    create_business_process,
     create_custom_report,
     create_integration_system,
     create_issg,
@@ -156,18 +158,7 @@ def main():
             integration["ReportWID"] = ID[0].firstChild.data
 
         else:
-
-            print(r, " - ", r.reason)
-            print(
-                f"Error: CRI {integration['Name']} could not be placed in target tenant"
-            )
-            print("Please check below for more information.")
-            print("Request: ")
-            print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
-            print("Response: ")
-            print(xml_response.toprettyxml(indent="   "))
-            input("Error\nHit enter to close.")
-            exit(1)
+            response_error(r, request, integration, "Custom Report")
         input("Continue?")
     else:
         input("No report needed. Continue?")
@@ -182,15 +173,7 @@ def main():
         print(f"{integration['Name']} was successfully placed in target tenant")
 
     else:
-        print(r, " - ", r.reason)
-        print(f"Error: {integration['Name']} could not be placed in target tenant")
-        print("Please check below for more information.")
-        print("Request: ")
-        print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
-        print("Response: ")
-        print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
-        input("Error: Hit enter to close.")
-        exit(1)
+        response_error(r, request, integration, "Integration System")
     input("Continue?")
 
     # Create ISU
@@ -206,17 +189,7 @@ def main():
         integration["ISU"] = "ISU " + integration["Name"]
 
     else:
-        print(r, " - ", r.reason)
-        print(f"Error: ISU {integration['Name']} could not be placed in target tenant")
-        print("Please check below for more information.")
-        print("Request: ")
-        # print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
-        print(request)
-        print("Response: ")
-        print(r.text)
-        # print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
-        input("Error: Hit enter to close.")
-        exit(1)
+        response_error(r, request, integration, "ISU")
     input("Continue?")
 
     # Create ISSG
@@ -234,20 +207,78 @@ def main():
         integration["ISSG"] = "ISSG " + integration["Name"]
 
     else:
-        print(r, " - ", r.reason)
-        print(f"ISSG {integration['Name']} could not be created in target tenant")
-        print("Please check the xml response for more information.")
-        # xml.dom.minidom.parseString(r.text)
-        print("Request: ")
-        print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
-        print("Response: ")
-        print(xml.dom.minidom.parseString(r.text).toprettyxml(indent="   "))
-        input("Error: Hit enter to close.")
-        exit(1)
+        response_error(r, request, integration, "ISSG")
+    input("Continue?")
+
+    # Create Integration Business Process
+    if integration["Template"] != "Enterprise Interface Builder":
+        while True:
+            create_retrieval_service_tf = input(
+                "Do you want to configure a Retrieval Service? (Y/N)"
+            ).upper()
+
+            if create_retrieval_service_tf == "Y":
+                create_retrieval_service_tf = True
+                break
+            if create_retrieval_service_tf == "N":
+                create_retrieval_service_tf = False
+                break
+            else:
+                print("That command was not recognized")
+        while True:
+            create_delivery_service_tf = input(
+                "Do you want to configure a Delivery Service? (Y/N)"
+            ).upper()
+
+            if create_delivery_service_tf == "Y":
+                create_delivery_service_tf = True
+                break
+            if create_delivery_service_tf == "N":
+                create_delivery_service_tf = False
+                break
+            else:
+                print("That command was not recognized")
+        request = create_business_process(
+            integration,
+            credentials,
+            create_retrieval_service_tf,
+            create_delivery_service_tf,
+        ).strip("\n")
+        print("Putting Business Process...")
+        r = requests.post(
+            wsdls["Core_Implementation_Service"], data=request, headers=header
+        )
+        sleep(5)
+        if r.status_code == 200:
+            print(r, " - ", r.reason)
+            print(
+                f"ISSG {integration['Name']} was successfully created and attached to ISU"
+            )
+            integration["ISSG"] = "ISSG " + integration["Name"]
+        else:
+            response_error(r, request, integration, "Business Process")
+        input("Continue?")
 
     print(integration)
     input("End Script?")
     os.system("cls" if os.name == "nt" else "clear")
+    exit(0)
+
+
+def response_error(response, request, integration_dict, component_name):
+    print(response, " - ", response.reason)
+    print(
+        f"{component_name} for {integration_dict['Name']} could not be created in target tenant"
+    )
+    print("Please check the xml response for more information.")
+    print("Request: ")
+    # print(xml.dom.minidom.parseString(request).toprettyxml(indent="   "))
+    print(request)
+    print("Response: ")
+    print(xml.dom.minidom.parseString(response.text).toprettyxml(indent="   "))
+    input("Error: Hit enter to close.")
+    os.system("cls" if os.name == "nt" else "clear")
+    exit(1)
 
 
 if __name__ == "__main__":

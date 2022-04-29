@@ -70,7 +70,6 @@ def generate_password(length: int = 16) -> str:
         "#",
         "$",
         "%",
-        "&",
         "'",
         "(",
         ")",
