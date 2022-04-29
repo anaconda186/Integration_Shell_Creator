@@ -23,7 +23,7 @@ Custom configuration will still need to be made.
     - [X] Create ISU - Completed: 2021-10-13
     - [X] Generate Password - Completed: 2021-10-16
  - [ ] Create Security Group
-    - [X] Create ISSG
+    - [X] Create ISSG - Completed: 2022-03-02
     - [ ] Add security domain to ISSG
  - [ ] Add BP Customization
     - [ ] Fire Integration
