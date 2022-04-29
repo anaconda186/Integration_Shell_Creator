@@ -26,10 +26,12 @@ Custom configuration will still need to be made.
     - [X] Create ISSG
     - [ ] Add security domain to ISSG
  - [ ] Add BP Customization
+    - [ ] Fire Integration
     - [ ] Define Delivery/ Retrieval Step
  - [ ] Create Optional Services
  - [ ] GUI
  - [ ] Read Template Data for Mass Load
+ - [ ] Populate Template from Smartsheet
 
 
 ## Notes
