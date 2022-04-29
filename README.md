@@ -14,7 +14,7 @@ Custom configuration will still need to be made.
        - [X] Create Shell Report - Completed 2021-10-16
        - [X] Create Report with defined Data Source - Completed 2021-10-17
        - [X] Create EIB - Completed 2021-10-17
-       - [X] Add Integration Report Tag - 2022-04-25
+       - [X] Add Integration Report Tag - Completed: 2022-04-25
     - [ ] Studio
        - [X] Create Cloud Integration Template - Completed 2021-10-15
        - [ ] Initialize Cloud Collection
@@ -25,9 +25,9 @@ Custom configuration will still need to be made.
  - [ ] Create Security Group
     - [X] Create ISSG - Completed: 2022-03-02
     - [ ] Add security domain to ISSG
- - [ ] Add BP Customization
-    - [ ] Fire Integration
-    - [ ] Define Delivery/ Retrieval Step
+ - [X] Add BP Customization - Completed: 2022-04-29
+    - [X] Fire Integration - Completed: 2022-04-29
+    - [X] Define Delivery/ Retrieval Step - Completed: 2022-04-29
  - [ ] Create Optional Services
  - [ ] GUI
  - [ ] Read Template Data for Mass Load

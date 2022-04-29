@@ -220,7 +220,7 @@ def main():
             if create_retrieval_service_tf == "Y":
                 create_retrieval_service_tf = True
                 break
-            if create_retrieval_service_tf == "N":
+            elif create_retrieval_service_tf == "N":
                 create_retrieval_service_tf = False
                 break
             else:
@@ -233,7 +233,7 @@ def main():
             if create_delivery_service_tf == "Y":
                 create_delivery_service_tf = True
                 break
-            if create_delivery_service_tf == "N":
+            elif create_delivery_service_tf == "N":
                 create_delivery_service_tf = False
                 break
             else:
