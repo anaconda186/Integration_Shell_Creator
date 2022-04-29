@@ -1,6 +1,7 @@
 import getpass
 import xml.dom.minidom
 import os.path
+import os
 from time import sleep
 
 import requests
@@ -22,9 +23,6 @@ credentials = {
 
 
 def main():
-    
-
-    # TODO: Add input and Dict for different Data Centers
     wsdls = {
         "Integrations": f"https://{credentials['dataCenter']}-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Integrations/v38.0",
         "Core_Implementation_Service": f"https://{credentials['dataCenter']}-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Core_Implementation_Service/v23.2",
@@ -48,7 +46,7 @@ def main():
     template_file.close()
 
     while True:
-        print(integration_templates)
+        # print(integration_templates)
         integration_template_name = input(
             "What INTEGRATION TEMPLATE would you like to create? "
         )
@@ -249,6 +247,7 @@ def main():
 
     print(integration)
     input("End Script?")
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 if __name__ == "__main__":
