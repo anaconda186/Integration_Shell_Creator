@@ -3,7 +3,7 @@
 ## Repo URL
 https://github.com/anaconda186/Integration_Shell_Creator.git
 
-The goal of this program is to completely automate the initilization of Integrations. 
+The goal of this program is to completely automate the initialization of Integrations. 
 This will create the initial shell of the integration. 
 Custom configuration will still need to be made. 
 

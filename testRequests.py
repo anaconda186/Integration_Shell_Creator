@@ -1,0 +1,17 @@
+import http.client
+
+conn = http.client.HTTPSConnection("api.workday.com")
+payload = ""
+headers = {
+    "Authorization": "Bearer eyJhbGciOiJSUzUxMiIsImtpZCI6IjIwMjItMTItMTYifQ.eyJpc3MiOiJDXHUwMDNkVVMsU1RcdTAwM2RDQSxMXHUwMDNkUGxlYXNhbnRvbixPVVx1MDAzZERldmVsb3BtZW50LE9cdTAwM2RXb3JrZGF5LENOXHUwMDNkT0NUT1BBQVMiLCJhdXRoX3RpbWUiOjE2NzEyMDQyMzMsImF1dGhfdHlwZSI6IlBhYVMiLCJzeXNfYWNjdF90eXAiOiJOIiwic2NvcGUiOnsicmVnaW9uX2ZxZG4iOiJhcGkud29ya2RheS5jb20iLCJyZWdpb24iOiJhd3M6dXMtd2VzdC0yIiwiY2xpZW50X2lkIjoiTURNeVltTTNaalV0Tm1RMFpTMDBZelptTFdFeU1ERXRPVGRrTVRoaU1UYzBaR1E1In0sInRva2VuVHlwZSI6IklkZW50aXR5Iiwic3ViIjoiSVNVIEV2ZW50IFNwZW5kIEFwcGxpY2F0aW9uIiwiYXVkIjoid2QiLCJleHAiOjE2NzEyMDc4MzMsImlhdCI6MTY3MTIwNDIzMywianRpIjoiMndkajUwaGdxcTRxcDRjaGw1cm8wbnZhOWxhNm94ejh0NTVzYWZ1MWhnN2V5OTF4MzkiLCJ0ZW5hbnQiOiJlcGljZ2FtZXM1In0.YuAnXSmGpTgw2AWx17WVPXaUVwxiwZXRqjBt5eO64R_0uf3gbjieQdpN8GSp8deH6_5rdRwF8xDW9V6Cge_kBpvtI1CpkifZcIuFPulqYwRNJj7RP5j0UWyI-fdDL1-aCXh7V3ncOQU3p-1t2vkBNcXbZWx9hiQ_8n5xeIRblXudKffCmEosLH447akYasiM7B9WcY_QKTzgpXCSzs5i8tEgmDnHTd-1miHtYbIBeAryJHbadoY3EbpIKrGe357GZgtQjtXUqvHPx4VkrzXoXeggewCJMRROAIfUOQftPQBwtKXlHZ5mzrarWHegbFhy5zA2WuqT3B-zxFVc2YMW3Q",
+    "Cookie": "TS012df9cf=010758ad2acf04fc52554698dfa63ca6c2f4b3509b559ce6630f0b6bbc9b6bccf21dcf7c821b2d3addb64dafdf6642db451e52f459",
+}
+conn.request(
+    "GET",
+    "/apps/eventSpendForm_rfcvgt/v1/eventAttachments/c15be115a2ec9015166f5d87afcc0001",
+    payload,
+    headers,
+)
+res = conn.getresponse()
+data = res.read()
+print(data.decode("utf-8", "ignore"))
