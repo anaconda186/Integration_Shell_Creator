@@ -1,12 +1,16 @@
-from ast import Break
+#!/usr/bin/env python
+
 import getpass
+from io import TextIOWrapper
 import xml.dom.minidom
 import os.path
 import os
 from time import sleep
 
 import requests
+from requests import Response
 
+from gatherData import read_template
 from password_generator import generate_password
 from webRequest import (
     create_business_process,
@@ -16,7 +20,8 @@ from webRequest import (
     create_isu,
 )
 
-credentials = {
+
+credentials: dict[str, str] = {
     "username": input("Username: "),
     "password": getpass.getpass(prompt="Password: "),
     "tenant": input("Tenant: "),
@@ -25,6 +30,7 @@ credentials = {
 
 
 def main():
+
     wsdls = {
         "Integrations": f"https://{credentials['dataCenter']}-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Integrations/v38.0",
         "Core_Implementation_Service": f"https://{credentials['dataCenter']}-impl-services1.workday.com/ccx/service/{credentials['tenant']}/Core_Implementation_Service/v23.2",
@@ -63,7 +69,6 @@ def main():
 
     # If EIB Create Custom Report
     if integration["Template"] == "Enterprise Interface Builder":
-
         # Ask if they know the data source for report
         while True:
             create_report_tf = input(
@@ -127,7 +132,7 @@ def main():
                 DATA_FILTER_TXT = os.path.join(
                     os.path.dirname(__file__), "data_files\\Data_Source_Filters.txt"
                 )
-                data_filter_file = open(DATA_FILTER_TXT, "r")
+                data_filter_file: TextIOWrapper = open(DATA_FILTER_TXT, "r")
                 data_filter_list = {}
                 for _ in data_filter_file:
                     _ = _.strip().split("\t")
@@ -141,16 +146,16 @@ def main():
             print("A temporary report will be created to load the integration")
 
         # Create Request
-        request = create_custom_report(integration, credentials).strip("\n")
-        header = {"content-type": "text/xml"}
+        request: str = create_custom_report(integration, credentials).strip("\n")
+        header: dict[str, str] = {"content-type": "text/xml"}
         print("Putting Report...")
-        r = requests.post(
+        r: Response = requests.post(
             wsdls["Core_Implementation_Service"], data=request, headers=header
         )
 
         # Parse Repsonse
         xml_response = xml.dom.minidom.parseString(r.text)
-        sleep(5)
+        # sleep(5)
         if r.status_code == 200:
             print(r, " - ", r.reason)
             print(f"CRI {integration['Name']} was successfully placed in target tenant")
@@ -164,10 +169,10 @@ def main():
         input("No report needed. Continue?")
 
     # Create Integration System
-    request = create_integration_system(integration, credentials).strip("\n")
+    request: str = create_integration_system(integration, credentials).strip("\n")
     print("Putting Integration...")
-    r = requests.post(wsdls["Integrations"], data=request, headers=header)
-    sleep(5)
+    r: Response = requests.post(wsdls["Integrations"], data=request, headers=header)
+    # sleep(5)
     if r.status_code == 200:
         print(r, " - ", r.reason)
         print(f"{integration['Name']} was successfully placed in target tenant")
@@ -177,10 +182,10 @@ def main():
     input("Continue?")
 
     # Create ISU
-    request = create_isu(integration, credentials).strip("\n")
+    request: str = create_isu(integration, credentials).strip("\n")
     print("Putting ISU...")
-    r = requests.post(wsdls["Integrations"], data=request, headers=header)
-    sleep(5)
+    r: Response = requests.post(wsdls["Integrations"], data=request, headers=header)
+    sleep(2)
     if r.status_code == 200:
         print(r, " - ", r.reason)
         print(
@@ -193,12 +198,12 @@ def main():
     input("Continue?")
 
     # Create ISSG
-    request = create_issg(integration, credentials).strip("\n")
+    request: str = create_issg(integration, credentials).strip("\n")
     print("Putting ISSG...")
-    r = requests.post(
+    r: Response = requests.post(
         wsdls["Core_Implementation_Service"], data=request, headers=header
     )
-    sleep(5)
+    # sleep(5)
     if r.status_code == 200:
         print(r, " - ", r.reason)
         print(
@@ -248,13 +253,12 @@ def main():
         r = requests.post(
             wsdls["Core_Implementation_Service"], data=request, headers=header
         )
-        sleep(5)
+        # sleep(5)
         if r.status_code == 200:
             print(r, " - ", r.reason)
             print(
-                f"ISSG {integration['Name']} was successfully created and attached to ISU"
+                f"The Business Process was successfully created for {integration['Name']}"
             )
-            integration["ISSG"] = "ISSG " + integration["Name"]
         else:
             response_error(r, request, integration, "Business Process")
         input("Continue?")
